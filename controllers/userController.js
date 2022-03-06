@@ -29,7 +29,7 @@ module.exports = {
   },
   login: async (req, res, next)=> {
     try {
-      const document = await usersModel.findOne({email:req.body.email});
+      const document = await userModel.findOne({email:req.body.email});
 
       if (document) {
         if (bcrypt.compareSync(req.body.password, document.password)) {
@@ -39,7 +39,7 @@ module.exports = {
           res.json({error: true, message: "Contraseña incorrecta"})
         }
       } else {
-        res.json({error: true, message: "Email inexistente"})
+        res.json({error: true, message: "Este email no está registrado en el sitio"})
       }
     } catch(e) {
       next(e);
