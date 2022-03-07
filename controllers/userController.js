@@ -44,5 +44,14 @@ module.exports = {
     } catch(e) {
       next(e);
     }
+  },
+  delete: async function (req, res, next) {
+    try {
+      const data = await userModel.deleteOne({ _id: req.params.id });
+      res.json({data, message: "Eliminad@ con éxito", error: "No"});
+    } catch (e) {
+      console.log(e);
+      res.status(200).json({message:e.message, error: "Si"});
+    }
   }
 };
