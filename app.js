@@ -3,6 +3,7 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const jwt = require('jsonwebtoken');
 
 var indexRouter = require('./routes/index');
 var userRouter = require('./routes/user');
@@ -37,6 +38,25 @@ app.options("/*", function(req, res, next){
 
 app.use('/', indexRouter);
 app.use('/user', userRouter);
+
+function validateUser(req, res, next) {
+  jwt.verify(req.headers["x-access-token"], req.app.get("k"), function (err, decoded) {
+    if (err) {
+      if (err.name == "TokenExpiredError") {
+        res.json({message: "Su cuenta expiró, vuelva a iniciar sesión."})
+      } else if (err.name == "JsonWebTokenError") {
+        res.json({message: "Token valido requerido."})
+      } else {
+        res.json({message: "Error en la autenticación."})
+      }
+    } else {
+      req.body.tokenData = decoded;
+      next();
+    }
+  })
+}
+
+app.validateUser = validateUser;
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
